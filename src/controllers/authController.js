@@ -1,24 +1,42 @@
 import { registerUser, loginUser, createdCompany } from "../services/authService.js";
+import { sendPayloadResponse } from "../utils/responsePayload.js";
 
 let refreshTokens = [];
 
 const register = async (req, res) => {
-    const userPayload = req.body;
-    const { username, email, password, companyName } = userPayload;
+    const reqUser = req.body;
+    const { username, email, password, companyName } = req.body;
 
     if (!username || !email || !password || !companyName) {
-        return res.status(400).json({ message: "Username, email, password, and companyName are required" });
+        return sendPayloadResponse(res, {
+            statusCode: 400,
+            success: true,
+            message: "Username, email, password, and companyName are required",
+            data: { message: "Username, email, password, and companyName are required" }
+        });
     }
 
     try {
-        const newCompany = await createdCompany(companyName);
-        userPayload.companyId = newCompany.id;
-        consoleLogger('*** Ok ***', `${userPayload.companyId }`, '#2ecc71');
-        const user = await registerUser(userPayload);
-        res.status(201).json({ message: "User registered successfully", user });
+        const company = await createdCompany(companyName);
+        reqUser.companyId = company.id;
+        const user = await registerUser(reqUser);
+
+        return sendPayloadResponse(res, {
+            statusCode: 201,
+            success: true,
+            message: "User registered successfully",
+            data: { user}
+        });
+
     } catch (error) {
-        console.error("Registration Error ❌:", error);
-        res.status(500).json({ message: `Server error: ${error}` });
+
+        return sendPayloadResponse(res, {
+            statusCode: 500,
+            success: false,
+            message: `Server error: ${error.message}`,
+            data: { message: `Server error: ${error.message}` }
+        });
+
     }
 };
 
@@ -27,16 +45,29 @@ const login = async (req, res) => {
         const { username, password } = req.body;
         const { accessToken, refreshToken, user } = await loginUser(username, password);
 
-        consoleLogger('*** Ok ***', `${accessToken}`, '#2ecc71');
-        consoleLogger('*** Ok ***', `${refreshToken}`, '#2ecc71');
-        consoleLogger('*** Ok ***', `${user}`, '#2ecc71');
+        //consoleLogger('*** Ok ***', `${accessToken}`, '#2ecc71');
+        //consoleLogger('*** Ok ***', `${refreshToken}`, '#2ecc71');
+        //consoleLogger('*** Ok ***', `${user}`, '#2ecc71');
 
         refreshTokens.push(refreshToken);
         res.cookie("refreshToken", refreshToken, { httpOnly: true });
         res.json({ token: accessToken, user });
+
+        return sendPayloadResponse(res, {
+            statusCode: 201,
+            success: true,
+            message: "User login success",
+            data: { user }
+        });
+
     } catch (error) {
-        consoleLogger('*** Error ***', `Error: ${error.message}`, '#e74c3c');
-        res.status(401).json({ message: error.message });
+
+        return sendPayloadResponse(res, {
+            statusCode: 500,
+            success: false,
+            message: `Server error: ${error.message}`,
+            data: { message: `Server error: ${error.message}` }
+        });
     }
 };
 
@@ -51,9 +82,23 @@ const refreshToken = (req, res) => {
             const newAccessToken = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "15m" });
             res.json({ token: newAccessToken });
         });
+
+        return sendPayloadResponse(res, {
+            statusCode: 201,
+            success: true,
+            message: "Refresh token success",
+            data: { token: newAccessToken }
+        });
+
     } catch (error) {
-        console.error("Registration Error ❌:", error);
-        res.status(500).json({ message: "Server error, please try again" });
+        
+        return sendPayloadResponse(res, {
+            statusCode: 500,
+            success: false,
+            message: `Server error: ${error.message}`,
+            data: null
+        });
+
     }
 
 };
@@ -62,6 +107,14 @@ const logout = (req, res) => {
     refreshTokens = refreshTokens.filter((token) => token !== req.cookies.refreshToken);
     res.clearCookie("refreshToken");
     res.json({ message: "User logged out successfully" });
+
+    return sendPayloadResponse(res, {
+        statusCode: 201,
+        success: true,
+        message: "Logout success",
+        data: { message: "User logged out successfully" }
+    });
+
 };
 
 export { register, login, refreshToken, logout };
