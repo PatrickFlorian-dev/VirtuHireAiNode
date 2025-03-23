@@ -3,7 +3,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import { sequelize, connectDB } from "./config/db.js";
-import { initializeModels } from "./models/index.js";
 
 // Global helper method for console logging with colors 
 import consoleLogger from './utils/consoleLogger.js';
@@ -13,7 +12,6 @@ const app = express();
 
 connectDB();
 sequelize.sync({ alter: true }); 
-initializeModels();
 
 app.use(express.json());
 app.use(cookieParser());
@@ -24,6 +22,8 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
 
 

@@ -1,14 +1,18 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByName, createUser } from "../repositories/userRepository.js";
+import { findUserByName, createUser, createCompany } from "../repositories/userRepository.js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const registerUser = async (username, email, password) => {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    return await createUser({ username, email, password: hashedPassword });
+const registerUser = async (userPayload) => {
+    userPayload.password = await bcrypt.hash(userPayload.password, 10);
+    return await createUser(userPayload);
 };
+
+const createdCompany = async (companyName) => {
+    return await createCompany(companyName);
+}
 
 const loginUser = async (username, password) => {
 
@@ -40,4 +44,4 @@ const loginUser = async (username, password) => {
 
 };
 
-export { registerUser, loginUser };
+export { registerUser, loginUser, createdCompany };

@@ -1,20 +1,24 @@
-import { registerUser, loginUser } from "../services/authService.js";
+import { registerUser, loginUser, createdCompany } from "../services/authService.js";
 
 let refreshTokens = [];
 
 const register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const userPayload = req.body;
+    const { username, email, password, companyName } = userPayload;
 
-    if (!username || !email || !password) {
-        return res.status(400).json({ message: "Name, email, and password are required" });
+    if (!username || !email || !password || !companyName) {
+        return res.status(400).json({ message: "Username, email, password, and companyName are required" });
     }
 
     try {
-        const user = await registerUser(username, email, password);
+        const newCompany = await createdCompany(companyName);
+        userPayload.companyId = newCompany.id;
+        consoleLogger('*** Ok ***', `${userPayload.companyId }`, '#2ecc71');
+        const user = await registerUser(userPayload);
         res.status(201).json({ message: "User registered successfully", user });
     } catch (error) {
         console.error("Registration Error ❌:", error);
-        res.status(500).json({ message: "Server error, please try again" });
+        res.status(500).json({ message: `Server error: ${error}` });
     }
 };
 
