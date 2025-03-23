@@ -5,14 +5,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const registerUser = async (name, email, password) => {
+const registerUser = async (username, email, password) => {
     const hashedPassword = await bcrypt.hash(password, 10);
-    return await createUser({ name, email, password: hashedPassword });
+    return await createUser({ username, email, password: hashedPassword });
 };
 
-const loginUser = async (name, password) => {
+const loginUser = async (username, password) => {
 
-    const user = await findUserByName(name);
+    const user = await findUserByName(username);
     if (!user) {
         throw new Error("Invalid credentials");
     }
@@ -26,13 +26,13 @@ const loginUser = async (name, password) => {
     consoleLogger('*** Ok ***', `Login OK`, '#2ecc71');
 
     const accessToken = jwt.sign(
-        { id: user.id, name: user.name },
+        { id: user.id, username: user.username },
         process.env.JWT_SECRET,
         { expiresIn: "15m" }
     );
 
     const refreshToken = jwt.sign(
-        { id: user.id, name: user.name },
+        { id: user.id, username: user.username },
         process.env.REFRESH_SECRET
     );
 

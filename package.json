@@ -5,12 +5,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "reset-db": "node src/scripts/reset-db.js",
+    "drop-db": "node src/scripts/drop-db.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^9.6.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "chalk": "^5.4.1",

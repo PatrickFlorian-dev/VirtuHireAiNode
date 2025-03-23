@@ -3,14 +3,14 @@ import { registerUser, loginUser } from "../services/authService.js";
 let refreshTokens = [];
 
 const register = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!username || !email || !password) {
         return res.status(400).json({ message: "Name, email, and password are required" });
     }
 
     try {
-        const user = await registerUser(name, email, password);
+        const user = await registerUser(username, email, password);
         res.status(201).json({ message: "User registered successfully", user });
     } catch (error) {
         console.error("Registration Error ❌:", error);
@@ -20,8 +20,8 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const { name, password } = req.body;
-        const { accessToken, refreshToken, user } = await loginUser(name, password);
+        const { username, password } = req.body;
+        const { accessToken, refreshToken, user } = await loginUser(username, password);
 
         consoleLogger('*** Ok ***', `${accessToken}`, '#2ecc71');
         consoleLogger('*** Ok ***', `${refreshToken}`, '#2ecc71');
@@ -44,7 +44,7 @@ const refreshToken = (req, res) => {
         jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
             if (err) return res.sendStatus(403);
     
-            const newAccessToken = jwt.sign({ id: user.id, name: user.name }, process.env.JWT_SECRET, { expiresIn: "15m" });
+            const newAccessToken = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "15m" });
             res.json({ token: newAccessToken });
         });
     } catch (error) {
