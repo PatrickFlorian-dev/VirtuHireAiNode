@@ -1,0 +1,32 @@
+/auth/register:
+  post:
+    tags:
+      - Auth
+    summary: Register a new user
+    description: Creates a new user account.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+              companyName:
+                type: string
+            required:
+              - username
+              - email
+              - password
+    responses:
+      '201':
+        description: User registered successfully
+      '400':
+        description: Validation error or user already exists
+      '500':
+        description: Server error

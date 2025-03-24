@@ -1,0 +1,5 @@
+tags:
+  - name: Auth
+    description: Endpoints related to user authentication (register, login, refresh, logout)
+  - name: CRUD
+    description: Dynamic CRUD operations for various tables (insert, read, update, delete)

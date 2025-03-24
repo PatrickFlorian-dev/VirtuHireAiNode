@@ -1,0 +1,15 @@
+/auth/logout:
+  post:
+    tags:
+      - Auth
+    summary: Logout user
+    description: Logs out the authenticated user by invalidating the token.
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: User logged out successfully
+      '401':
+        description: Unauthorized
+      '500':
+        description: Server error

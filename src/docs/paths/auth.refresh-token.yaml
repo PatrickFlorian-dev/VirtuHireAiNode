@@ -1,0 +1,15 @@
+/auth/refresh-token:
+  post:
+    tags:
+      - Auth
+    summary: Refresh JWT token
+    description: Refreshes the JWT token for the authenticated user.
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Token refreshed successfully
+      '401':
+        description: Unauthorized or expired token
+      '500':
+        description: Server error

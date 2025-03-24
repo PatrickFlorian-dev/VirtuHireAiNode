@@ -27,6 +27,11 @@ pathFiles.forEach((file) => {
     swaggerDefinition.paths = { ...swaggerDefinition.paths, ...doc };
 });
 
+// Auto-load tags.yaml
+const tagsFile = path.resolve('./docs/tags.yaml');
+const tagsDoc = YAML.load(tagsFile);
+swaggerDefinition.tags = tagsDoc.tags;
+
 const options = {
     swaggerDefinition,
     apis: [], 
