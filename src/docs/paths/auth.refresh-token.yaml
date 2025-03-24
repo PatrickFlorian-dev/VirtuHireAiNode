@@ -1,4 +1,4 @@
-/auth/refresh-token:
+/api/auth/refresh-token:
   post:
     tags:
       - Auth

@@ -6,9 +6,9 @@ import { glob } from 'glob';
 const swaggerDefinition = {
     openapi: '3.0.0',
     info: {
-        title: 'Dynamic CRUD API',
+        title: 'VirtuHire AI API',
         version: '1.0.0',
-        description: 'API documentation for dynamic CRUD endpoints (Insert, Read, Update, Delete)',
+        description: 'API documentation for VirtuHireAi Auth, CRUD endpoints (Insert, Read, Update, Delete), and other misc endpoints',
     },
     servers: [
         {

@@ -1,4 +1,4 @@
-/auth/logout:
+/api/auth/logout:
   post:
     tags:
       - Auth

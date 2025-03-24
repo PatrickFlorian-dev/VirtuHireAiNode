@@ -17,22 +17,21 @@ const getModel = (tableName) => {
 
 // CREATE
 const crudInsert = async (insertPayload) => {
-    const { tableName, ...data } = insertPayload;
+    const { tableName, data } = insertPayload;
     const model = getModel(tableName);
 
-    // Check for unique constraint
-    const uniqueFields = uniqueConstraints[tableName];
-    if (uniqueFields) {
-        const where = {};
-        uniqueFields.forEach((field) => {
-            if (data[field]) {
-                where[field] = data[field];
-            }
-        });
+    // Unique check for Company.companyName or User.username
+    if (tableName === 'User' && data.username) {
+        const exists = await model.findOne({ where: { username: data.username } });
+        if (exists) {
+            throw new Error(`User with username '${data.username}' already exists.`);
+        }
+    }
 
-        const existing = await model.findOne({ where });
-        if (existing) {
-            throw new Error(`${tableName} already exists with the provided unique fields.`);
+    if (tableName === 'Company' && data.companyName) {
+        const exists = await model.findOne({ where: { companyName: data.companyName } });
+        if (exists) {
+            throw new Error(`Company with name '${data.companyName}' already exists.`);
         }
     }
 

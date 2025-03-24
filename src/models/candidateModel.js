@@ -19,6 +19,8 @@ const Candidate = sequelize.define("Candidate", {
     gender: { type: DataTypes.STRING },
     veteranStatus: { type: DataTypes.BOOLEAN },
     disability: { type: DataTypes.BOOLEAN },
+    potential: DataTypes.STRING,
+    yearsOfExperience: DataTypes.NUMBER,
     dob: { type: DataTypes.DATE },
     openToRelocation: { type: DataTypes.BOOLEAN },
     remote: { type: DataTypes.BOOLEAN },

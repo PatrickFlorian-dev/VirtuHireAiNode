@@ -24,7 +24,7 @@ const crudInsert = async (req, res) => {
         return sendPayloadResponse(res, {
             statusCode: 500,
             success: false,
-            message: `${errorMessage} : ${error.message}`,
+            message: `${errorMessage ? errorMessage + ' : ' : 'Error: '}${error.message}`,
         });
     }
 };
@@ -52,7 +52,7 @@ const crudRead = async (req, res) => {
         return sendPayloadResponse(res, {
             statusCode: 500,
             success: false,
-            message: `${errorMessage} : ${error.message}`,
+            message: `${errorMessage ? errorMessage + ' : ' : 'Error: '}${error.message}`,
         });
     }
 };
@@ -80,7 +80,7 @@ const crudUpdate = async (req, res) => {
         return sendPayloadResponse(res, {
             statusCode: 500,
             success: false,
-            message: `${errorMessage} : ${error.message}`,
+            message: `${errorMessage ? errorMessage + ' : ' : 'Error: '}${error.message}`,
         });
     }
 };
@@ -108,7 +108,7 @@ const crudDelete = async (req, res) => {
         return sendPayloadResponse(res, {
             statusCode: 500,
             success: false,
-            message: `${errorMessage} : ${error.message}`,
+            message: `${errorMessage ? errorMessage + ' : ' : 'Error: '}${error.message}`,
         });
     }
 };
