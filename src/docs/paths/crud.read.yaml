@@ -1,0 +1,29 @@
+# docs/paths/crud.read.yaml
+/api/crud/read:
+  post:
+    summary: Dynamically read records from any table
+    tags: [CRUD]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              tableName:
+                type: string
+                example: User
+              query:
+                type: object
+                description: Sequelize where query (optional)
+                example:
+                  id: 1
+    responses:
+      200:
+        description: Successfully fetched data
+      404:
+        description: Data not found
+      500:
+        description: Server error

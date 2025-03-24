@@ -18,4 +18,15 @@ const initializeModels = () => {
   InterviewStatus.sync();
 };
 
-export { User, Candidate, Interview, Job, Role, Company, JobStatus, InterviewStatus, initializeModels };
+const models = {
+  User,
+  Candidate,
+  Interview,
+  Job,
+  Role,
+  Company,
+  JobStatus,
+  InterviewStatus
+};
+
+export { User, Candidate, Interview, Job, Role, Company, JobStatus, InterviewStatus, initializeModels, models };

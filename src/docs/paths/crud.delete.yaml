@@ -1,0 +1,29 @@
+# docs/paths/crud.delete.yaml
+/api/crud/delete:
+  delete:
+    summary: Dynamically delete records from any table
+    tags: [CRUD]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              tableName:
+                type: string
+                example: User
+              query:
+                type: object
+                description: Sequelize where condition for delete
+                example:
+                  id: 1
+    responses:
+      200:
+        description: Successfully deleted data
+      404:
+        description: Record not found
+      500:
+        description: Server error

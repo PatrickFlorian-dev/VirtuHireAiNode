@@ -1,0 +1,35 @@
+# docs/paths/crud.update.yaml
+/api/crud/update:
+  put:
+    summary: Dynamically update records in any table
+    tags: [CRUD]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              tableName:
+                type: string
+                example: User
+              query:
+                type: object
+                description: Sequelize where condition for update
+                example:
+                  id: 1
+              data:
+                type: object
+                description: Fields to update
+                example:
+                  email: newemail@example.com
+                  username: johndoe_updated
+    responses:
+      200:
+        description: Successfully updated data
+      404:
+        description: Record not found
+      500:
+        description: Server error

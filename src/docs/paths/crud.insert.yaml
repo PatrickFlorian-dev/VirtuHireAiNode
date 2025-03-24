@@ -1,0 +1,25 @@
+# docs/paths/crud.insert.yaml
+/api/crud/insert:
+  post:
+    summary: Dynamically insert data into any table
+    tags: [CRUD]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              tableName:
+                type: string
+              username:
+                type: string
+              email:
+                type: string
+    responses:
+      201:
+        description: Successfully inserted data
+      500:
+        description: Server error or validation failed
