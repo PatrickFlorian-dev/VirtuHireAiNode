@@ -45,43 +45,50 @@ const login = async (req, res) => {
         const { username, password } = req.body;
         const { accessToken, refreshToken, user } = await loginUser(username, password);
 
-        //consoleLogger('*** Ok ***', `${accessToken}`, '#2ecc71');
-        //consoleLogger('*** Ok ***', `${refreshToken}`, '#2ecc71');
-        //consoleLogger('*** Ok ***', `${user}`, '#2ecc71');
-
         refreshTokens.push(refreshToken);
         res.cookie("refreshToken", refreshToken, { httpOnly: true });
-        res.json({ token: accessToken, user });
 
         return sendPayloadResponse(res, {
-            statusCode: 201,
+            statusCode: 200,
             success: true,
             message: "User login success",
-            data: { user }
+            data: { token: accessToken, user }
         });
 
     } catch (error) {
-
         return sendPayloadResponse(res, {
             statusCode: 500,
             success: false,
             message: `Server error: ${error.message}`,
-            data: { message: `Server error: ${error.message}` }
+            data: null
         });
     }
 };
+
 
 const refreshToken = (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken || !refreshTokens.includes(refreshToken)) return res.sendStatus(403);
 
     try {
+
         jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
-            if (err) return res.sendStatus(403);
-    
-            const newAccessToken = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "15m" });
-            res.json({ token: newAccessToken });
+            if (err) return sendPayloadResponse(res, { statusCode: 403, success: false, message: "Invalid token", data: null });
+        
+            const newAccessToken = jwt.sign(
+                { id: user.id, username: user.username },
+                process.env.JWT_SECRET,
+                { expiresIn: "15m" }
+            );
+        
+            return sendPayloadResponse(res, {
+                statusCode: 200,
+                success: true,
+                message: "Token refreshed successfully",
+                data: { token: newAccessToken }
+            });
         });
+        
 
         return sendPayloadResponse(res, {
             statusCode: 201,
@@ -106,7 +113,6 @@ const refreshToken = (req, res) => {
 const logout = (req, res) => {
     refreshTokens = refreshTokens.filter((token) => token !== req.cookies.refreshToken);
     res.clearCookie("refreshToken");
-    res.json({ message: "User logged out successfully" });
 
     return sendPayloadResponse(res, {
         statusCode: 201,
