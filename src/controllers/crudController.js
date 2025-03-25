@@ -31,17 +31,17 @@ const crudInsert = async (req, res) => {
 
 // READ
 const crudRead = async (req, res) => {
-    const { tableName, query = {}, successMessage, errorMessage } = req.body;
-    if (!tableName) {
+    const { tableName, query = {}, successMessage, errorMessage, username, recordsLeft, lastId } = req.body;
+    if (!tableName || !username) {
         return sendPayloadResponse(res, {
             statusCode: 400,
             success: false,
-            message: "tableName is required",
+            message: "tableName and username are required",
         });
     }
 
     try {
-        const data = await service.crudRead({ tableName, query });
+        const data = await service.crudRead({ tableName, query, username, recordsLeft, lastId });
         return sendPayloadResponse(res, {
             statusCode: 200,
             success: true,

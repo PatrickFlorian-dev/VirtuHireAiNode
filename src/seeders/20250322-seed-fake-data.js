@@ -1,4 +1,3 @@
-// seeders/20250322-seed-fake-data.js
 import { faker } from '@faker-js/faker';
 import { sequelize } from '../config/db.js';
 import { Company, User, Role, Job, Candidate, Interview } from '../models/associations.js';
@@ -19,89 +18,105 @@ export const seedFakeData = async () => {
     let candidateCount = 0;
     let interviewCount = 0;
 
-    for (let i = 0; i < 5; i++) {
+    // ✅ Generate exactly 100 companies
+    const companies = [];
+    for (let i = 0; i < 100; i++) {
       const company = await Company.create({
         companyName: faker.company.name(),
         companyDescription: faker.company.catchPhrase(),
-        active: faker.datatype.boolean(),
+        active: true,
       });
+      companies.push(company);
       companyCount++;
+    }
 
-      const users = [];
-      for (let j = 0; j < 5; j++) {
-        const role = faker.helpers.arrayElement(roles);
-        const user = await User.create({
-          username: faker.internet.userName(),
-          email: faker.internet.email(),
-          password: faker.internet.password(),
-          firstName: faker.person.firstName(),
-          lastName: faker.person.lastName(),
-          position: faker.person.jobTitle(),
-          description: faker.lorem.sentence(),
-          userPrefs: { theme: faker.helpers.arrayElement(['dark', 'light']) },
-          roleId: role.id,
-          companyId: company.id,
-          active: faker.datatype.boolean(),
-        });
-        users.push(user);
-        userCount++;
-      }
+    // ✅ Generate exactly 100 users
+    const users = [];
+    for (let i = 0; i < 100; i++) {
+      const role = faker.helpers.arrayElement(roles);
+      const user = await User.create({
+        username: faker.internet.userName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        position: faker.person.jobTitle(),
+        description: faker.lorem.sentence(),
+        userPrefs: { theme: faker.helpers.arrayElement(['dark', 'light']) },
+        roleId: role.id,
+        companyId: faker.helpers.arrayElement(companies).id,
+        active: true,
+      });
+      users.push(user);
+      userCount++;
+    }
 
-      const jobs = [];
-      for (let k = 0; k < 3; k++) {
-        const job = await Job.create({
-          jobName: faker.person.jobTitle(),
-          jobDescription: faker.lorem.paragraph(),
-          statusId: faker.helpers.rangeToNumber({ min: 1, max: 4 }), // JobStatus ID range
-          leadRecruiterId: faker.helpers.arrayElement(users).id,
-          companyId: company.id,
-          active: faker.datatype.boolean(),
-        });
-        jobs.push(job);
-        jobCount++;
-      }
+    // ✅ Generate exactly 100 jobs
+    const jobs = [];
+    for (let i = 0; i < 100; i++) {
+      const job = await Job.create({
+        jobName: faker.person.jobTitle(),
+        jobDescription: faker.lorem.paragraph(),
+        statusId: faker.helpers.rangeToNumber({ min: 1, max: 4 }),
+        leadRecruiterId: faker.helpers.arrayElement(users).id,
+        companyId: faker.helpers.arrayElement(companies).id,
+        active: true,
+      });
+      jobs.push(job);
+      jobCount++;
+    }
 
-      for (const job of jobs) {
-        for (let c = 0; c < 5; c++) {
-          const candidate = await Candidate.create({
-            firstName: faker.person.firstName(),
-            lastName: faker.person.lastName(),
-            jobId: job.id,
-            phase: faker.word.sample(),
-            email: faker.internet.email(),
-            phoneNumber: faker.phone.number(),
-            address: faker.location.streetAddress(),
-            address2: faker.location.secondaryAddress(),
-            city: faker.location.city(),
-            country: faker.location.country(),
-            state: faker.location.state(),
-            county: faker.location.county(),
-            citizenshipStatus: faker.location.country(),
-            needSponsorship: faker.datatype.boolean(),
-            gender: faker.person.sex(),
-            dob: faker.date.birthdate(),
-            veteranStatus: faker.datatype.boolean(),
-            disability: faker.datatype.boolean(),
-            openToRelocation: faker.datatype.boolean(),
-            remote: faker.datatype.boolean(),
-            secretJobCode: faker.string.alphanumeric(8),
-            secretJobCodeExpiration: faker.date.future(),
-            otherInfo: { hobbies: faker.lorem.words(3) },
-            active: faker.datatype.boolean(),
+    // Ensure jobId = 1 exists
+    const jobOne = jobs[0] || (await Job.findByPk(1));
+    if (!jobOne) {
+      throw new Error("🚨 jobId = 1 does not exist even after seeding!");
+    }
+
+    // ✅ Generate exactly 2000 candidates
+    for (let i = 0; i < 2000; i++) {
+      const assignedJobId = i < 1000 ? jobOne.id : faker.helpers.arrayElement(jobs).id;
+
+      const candidate = await Candidate.create({
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        jobId: assignedJobId,
+        phase: faker.word.sample(),
+        email: faker.internet.email(),
+        phoneNumber: faker.phone.number(),
+        address: faker.location.streetAddress(),
+        address2: faker.location.secondaryAddress(),
+        city: faker.location.city(),
+        country: faker.location.country(),
+        state: faker.location.state(),
+        county: faker.location.county(),
+        citizenshipStatus: faker.location.country(),
+        needSponsorship: faker.datatype.boolean(),
+        gender: faker.person.sex(),
+        dob: faker.date.birthdate(),
+        veteranStatus: faker.datatype.boolean(),
+        disability: faker.datatype.boolean(),
+        openToRelocation: faker.datatype.boolean(),
+        remote: faker.datatype.boolean(),
+        secretJobCode: faker.string.alphanumeric(8),
+        secretJobCodeExpiration: faker.date.future(),
+        otherInfo: { hobbies: faker.lorem.words(3) },
+        active: true,
+      });
+
+      candidateCount++;
+
+      // ✅ Generate exactly 100 interviews per batch of candidates (Total: 100)
+      if (interviewCount < 100) {
+        for (let j = 0; j < 2; j++) {
+          await Interview.create({
+            candidateId: candidate.id,
+            jobId: assignedJobId,
+            score: faker.helpers.rangeToNumber({ min: 1, max: 10 }),
+            interviewDate: faker.date.future(),
+            interviewType: faker.helpers.arrayElement(['phone', 'onsite', 'virtual']),
+            statusId: faker.helpers.rangeToNumber({ min: 1, max: 6 }),
           });
-          candidateCount++;
-
-          for (let i = 0; i < 2; i++) {
-            await Interview.create({
-              candidateId: candidate.id,
-              jobId: job.id,
-              score: faker.helpers.rangeToNumber({ min: 1, max: 10 }),
-              interviewDate: faker.date.future(),
-              interviewType: faker.helpers.arrayElement(['phone', 'onsite', 'virtual']),
-              statusId: faker.helpers.rangeToNumber({ min: 1, max: 6 }), // InterviewStatus ID range
-            });
-            interviewCount++;
-          }
+          interviewCount++;
         }
       }
     }
