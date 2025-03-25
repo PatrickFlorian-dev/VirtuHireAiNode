@@ -6,6 +6,7 @@ import { sequelize, connectDB } from "./config/db.js";
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './docs/swagger.js'
 import crudRouter from './routes/crudRoutes.js';
+import compression from 'compression';
 
 // Global helper method for console logging with colors 
 import consoleLogger from './utils/consoleLogger.js';
@@ -18,6 +19,8 @@ await sequelize.sync({ force: false, alter: false, logging: false });
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(compression());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
