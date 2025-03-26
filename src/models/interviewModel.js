@@ -12,4 +12,3 @@ const Interview = sequelize.define("Interview", {
 }, { timestamps: true });
 
 export default Interview;
-  

@@ -100,6 +100,14 @@ export const seedFakeData = async () => {
         secretJobCode: faker.string.alphanumeric(8),
         secretJobCodeExpiration: faker.date.future(),
         otherInfo: { hobbies: faker.lorem.words(3) },
+        potential: faker.word.sample(),
+        yearsOfExperience: faker.helpers.rangeToNumber({ min: 1, max: 25 }),
+        availability1Start: faker.date.birthdate(),
+        availability2Start: faker.date.birthdate(),
+        availability3Start: faker.date.birthdate(),
+        availability1End: faker.date.birthdate(),
+        availability2End: faker.date.birthdate(),
+        availability3End: faker.date.birthdate(),
         active: true,
       });
 
